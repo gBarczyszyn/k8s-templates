@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: $APP_NAME
+  name: $APP_NAME
+  namespace: $NAMESPACE
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: $TARGET_PORT
+  selector:
+    app: $APP_NAME
+  type: ClusterIP

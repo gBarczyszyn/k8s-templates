@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: $HPA_NAME
+  namespace: $NAMESPACE
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: $HPA_NAME
+  minReplicas: $MIN_SIZE
+  maxReplicas: $MAX_SIZE
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageValue: $HPA_THRESHOLD

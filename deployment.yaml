@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_NAME
+    imageVersion: "$IMAGE_VERSION"
+  name: $APP_NAME
+  namespace: $NAMESPACE
+  annotations:
+    # It will reload the service whenever CONFIG MAP is updated. You must have stakater in your cluster
+    configmap.reloader.stakater.com/reload: "$CONFIG_MAP"
+spec:
+  replicas: $MIN_SIZE
+  selector:
+    matchLabels:
+      app: $APP_NAME
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: $APP_NAME
+        imageVersion: "$IMAGE_VERSION"
+    spec:
+      containers:
+      - name: $APP_NAME
+        image: $IMAGE
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: $TARGET_PORT
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: $CONFIG_MAP
+        resources:
+          requests:
+            memory: 185Mi
+      restartPolicy: Always
